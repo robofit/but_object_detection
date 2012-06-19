@@ -1,0 +1,4 @@
+<launch>
+  <!-- name = node name, pkg = package of the node, type = name of executable file -->
+  <node name="but_sample_detector" pkg="but_sample_detector" type="but_sample_detector" />
+</launch>
