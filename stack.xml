@@ -1,0 +1,11 @@
+<stack>
+  <description brief="but_object_detection">but_object_detection</description>
+  <author>Maintained by dcgm-robotics@FIT group</author>
+  <license></license>  
+  <review status="unreviewed" notes=""/>
+  <url></url>
+  <depend stack="ros" /> <!-- roslib -->
+  <depend stack="common_msgs" /> <!-- nav_msgs, actionlib_msgs, trajectory_msgs, sensor_msgs, geometry_msgs, visualization_msgs -->
+  <depend stack="vision_opencv" /> <!-- opencv2, cv_bridge -->
+
+</stack>

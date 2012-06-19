@@ -1,0 +1,18 @@
+<package>
+  <description brief="but_objdet_msgs">
+
+     ...
+
+  </description>
+  <author>dcgm-robotics@FIT group</author>
+  <license>BUT OPEN SOURCE LICENCE</license>
+  <review status="unreviewed" notes=""/>
+  <url></url>
+  
+  <depend package="roscpp"/>
+  <depend package="sensor_msgs"/>
+  <depend package="geometry_msgs"/>
+
+</package>
+
+

@@ -1,0 +1,18 @@
+
+# REQUEST
+#===============================================================================
+Header header
+
+# Id of a class or an object, for which predictions are required, can be specified.
+# If none of these parameters is set, predictions of all available detections
+# are returned.
+int32 class_id
+int32 object_id
+---
+
+# RESPONSE
+#===============================================================================
+# Predictions of required detections are returned (the same type as for
+# detections is used)
+but_objdet_msgs/Detection[] predictions
+

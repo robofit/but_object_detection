@@ -1,0 +1,21 @@
+<package>
+  <description brief="but_sample_detector">
+
+     ...
+
+  </description>
+  <author>dcgm-robotics@FIT group</author>
+  <license>BUT OPEN SOURCE LICENCE</license>
+  <review status="unreviewed" notes=""/>
+  <url></url>
+  
+  <depend package="roscpp"/>
+  <depend package="sensor_msgs"/>
+  <depend package="opencv2"/>
+  <depend package="cv_bridge"/>
+  <depend package="but_objdet"/>
+  <depend package="but_objdet_msgs"/>
+
+</package>
+
+
