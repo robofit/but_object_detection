@@ -1,9 +1,14 @@
 <stack>
-  <description brief="but_object_detection">but_object_detection</description>
-  <author>Maintained by dcgm-robotics@FIT group</author>
-  <license></license>  
+  <description brief="but_object_detection">
+
+Object Detection API for ROS provided by dcgm-robotics@FIT group.
+
+  </description>
+  <author>dcgm-robotics@FIT group, maintained by Michal Spanel (spanel@fit.vutbr.cz)</author>
+  <license></license>
   <review status="unreviewed" notes=""/>
-  <url></url>
+  <url>http://www.ros.org/wiki/but_object_detection</url>
+
   <depend stack="ros" /> <!-- roslib -->
   <depend stack="common_msgs" /> <!-- nav_msgs, actionlib_msgs, trajectory_msgs, sensor_msgs, geometry_msgs, visualization_msgs -->
   <depend stack="vision_opencv" /> <!-- opencv2, cv_bridge -->

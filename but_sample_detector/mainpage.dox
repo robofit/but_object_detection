@@ -2,14 +2,15 @@
 \mainpage
 \htmlinclude manifest.html
 
+Object Detection API (ObjDet API) for ROS provided by dcgm-robotics@FIT group:
+- sample object detector
+
+
 <!-- 
-Provide an overview of your package.
--->
-
-
 \section codeapi Code API
 
-<!--
+\subsection
+
 Provide links to specific auto-generated API documentation within your
 package that is of particular interest to a reader. Doxygen will
 document pretty much every part of your code, so do your best here to
