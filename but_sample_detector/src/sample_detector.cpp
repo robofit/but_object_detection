@@ -3,7 +3,7 @@
  * Author: Tomas Hodan (xhodan04@stud.fit.vutbr.cz)
  * Date: 01.04.2012 (version 1.0)
  *
- * License: BUT OPEN SOURCE LICENSE
+ * License: LGPL
  *
  * Description:
  * Sample detector demonstrating how to wrap a detector using ObjDet API into ROS.
@@ -19,7 +19,11 @@
 
 using namespace cv;
 using namespace std;
+using namespace but_objdet;
 
+
+namespace but_sample_detector
+{
 
 /* -----------------------------------------------------------------------------
  * Constructor
@@ -71,7 +75,7 @@ double SampleDetector::getParam( int param_id )
 /* -----------------------------------------------------------------------------
  * Function providing predictions, which can be taken into account during detection
  */
-void SampleDetector::prediction( vector<butObject>& objects, int FLAGS )
+void SampleDetector::prediction( Objects& objects, int FLAGS )
 {
     // ...
 }
@@ -80,12 +84,12 @@ void SampleDetector::prediction( vector<butObject>& objects, int FLAGS )
 /* -----------------------------------------------------------------------------
  * Detection (FAKE)
  */
-void SampleDetector::detect( const Mat& rgb, const Mat& depth, vector<butObject>& objects, int FLAGS )
+void SampleDetector::detect( const Mat& rgb, const Mat& depth, Objects& objects, int FLAGS )
 {
     objects.clear();
 
     // Set a bounding box of a FAKE detection
-    butObject detection;
+    Object detection;
     detection.m_bb.x = 100 + (rand() % 20); 
     detection.m_bb.y = 100 + (rand() % 20); 
     detection.m_bb.width = 100 + (rand() % 5);
@@ -98,5 +102,7 @@ void SampleDetector::detect( const Mat& rgb, const Mat& depth, vector<butObject>
     detection.m_score = 0;
     
     objects.push_back(detection);
+}
+
 }
 

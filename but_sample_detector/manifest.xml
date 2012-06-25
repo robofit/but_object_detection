@@ -1,13 +1,14 @@
 <package>
   <description brief="but_sample_detector">
 
-     ...
+Object Detection API (ObjDet API) for ROS provided by dcgm-robotics@FIT group:
+- sample object detector
 
   </description>
-  <author>dcgm-robotics@FIT group</author>
-  <license>BUT OPEN SOURCE LICENCE</license>
+  <author>Tomas Hodan, Vitezslav Beran (beranv@fit.vutbr.cz), Michal Spanel (spanel@fit.vutbr.cz)</author>
+  <license>LGPL</license>
   <review status="unreviewed" notes=""/>
-  <url></url>
+  <url>http://www.ros.org/wiki/but_sample_detector</url>
   
   <depend package="roscpp"/>
   <depend package="sensor_msgs"/>

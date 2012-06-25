@@ -1,10 +1,28 @@
-/**
- * Developed by dcgm-robotics@FIT group
- * Author: Tomas Hodan (xhodan04@stud.fit.vutbr.cz)
- * Date: 01.04.2012 (version 1.0)
+/******************************************************************************
+ * \file
  *
- * License: BUT OPEN SOURCE LICENSE
- *------------------------------------------------------------------------------
+ * $Id:$
+ *
+ * Copyright (C) Brno University of Technology
+ *
+ * This file is part of software developed by dcgm-robotics@FIT group.
+ *
+ * Author: Tomas Hodan
+ * Supervised by: Vitezslav Beran (beranv@fit.vutbr.cz), Michal Spanel (spanel@fit.vutbr.cz)
+ * Date: 01/04/2012
+ *
+ * This file is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This file is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this file.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <opencv2/opencv.hpp>
@@ -15,14 +33,19 @@
 #include "but_objdet_msgs/Detection.h"
 #include "but_objdet/convertor/convertor.h"
 
-using namespace but_objdet_msgs; 
+using namespace std;
+using namespace but_objdet_msgs;
+ 
+
+namespace but_objdet
+{
  
 /* -----------------------------------------------------------------------------
  * Conversion from Detection msg to butObject
  */
-butObject Convertor::detectionToButObject(Detection &detection)
+Object Convertor::detectionToButObject(const Detection &detection)
 {
-    butObject object;
+    Object object;
         
     object.m_id = detection.m_id;
     object.m_class = detection.m_class;
@@ -59,9 +82,9 @@ butObject Convertor::detectionToButObject(Detection &detection)
 /* -----------------------------------------------------------------------------
  * Conversion from vector of Detection msgs to vector of butObjects
  */
-vector<butObject> Convertor::detectionsToButObjects(vector<Detection> &detections)
+Objects Convertor::detectionsToButObjects(const Detections &detections)
 {
-    vector<butObject> objects;
+    Objects objects;
     
     for(unsigned int i = 0; i < detections.size(); i++) {
         objects.push_back(detectionToButObject(detections[i]));
@@ -74,7 +97,7 @@ vector<butObject> Convertor::detectionsToButObjects(vector<Detection> &detection
 /* -----------------------------------------------------------------------------
  * Conversion from butObject to Detection msg
  */
-Detection Convertor::butObjectToDetection(butObject &object, std_msgs::Header header)
+Detection Convertor::butObjectToDetection(const Object &object, std_msgs::Header header)
 {
     Detection detection;
     
@@ -114,7 +137,7 @@ Detection Convertor::butObjectToDetection(butObject &object, std_msgs::Header he
 /* -----------------------------------------------------------------------------
  * Conversion from vector of butObjects to vector of Detection msgs
  */
-vector<Detection> Convertor::butObjectsToDetections(vector<butObject> &objects, std_msgs::Header header)
+Detections Convertor::butObjectsToDetections(const Objects &objects, std_msgs::Header header)
 {
     vector<Detection> detections;
     
@@ -123,5 +146,7 @@ vector<Detection> Convertor::butObjectsToDetections(vector<butObject> &objects, 
     }
     
     return detections;
+}
+
 }
 
