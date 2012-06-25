@@ -1,13 +1,29 @@
-/**
- * Developed by dcgm-robotics@FIT group
+/******************************************************************************
+ * \file
+ *
+ * $Id:$
+ *
+ * Copyright (C) Brno University of Technology
+ *
+ * This file is part of software developed by dcgm-robotics@FIT group.
+ *
  * Author: Tomas Hodan (xhodan04@stud.fit.vutbr.cz)
- * Date: 01.04.2012 (version 1.0)
+ * Supervised by: Vitezslav Beran (beranv@fit.vutbr.cz), Michal Spanel (spanel@fit.vutbr.cz)
+ * Date: 01/04/2012
+ * Description: Sample detector demonstrating how to wrap a detector using ObjDet API into ROS.
  *
- * License: BUT OPEN SOURCE LICENSE
+ * This file is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * Description:
- * Sample detector demonstrating how to wrap a detector using ObjDet API into ROS.
- *------------------------------------------------------------------------------
+ * This file is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this file.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ros/ros.h> // Main header of ROS
@@ -30,19 +46,32 @@
 
 using namespace cv;
 using namespace std;
+using namespace but_objdet;
 using namespace but_objdet_msgs;
 
+// If set to 1, detections will be visualized. If a tracker node is used, it is
+// better to visualize the detections together with predictions there.
+#define VISUAL_OUTPUT 0
+
+const string imageTopic = "/cam3d/rgb/image_raw";
+const string detectionTopic = "/but_objdet/detections";
+
+
+namespace but_sample_detector
+{
 
 /* -----------------------------------------------------------------------------
  * Constructor
  */
 SampleDetectorNode::SampleDetectorNode()
 {   
-    sampleDetector = new SampleDetector(); // Detector
-    matcherOverlap = new MatcherOverlap(); // Matcher
+    sampleDetector = new but_sample_detector::SampleDetector(); // Detector
+    matcherOverlap = new but_objdet::MatcherOverlap(); // Matcher
     
     // Create a window to show the incoming video and set its mouse event handler
-    namedWindow("Sample detector", CV_WINDOW_AUTOSIZE);
+    if(VISUAL_OUTPUT) {
+        namedWindow("Sample detector", CV_WINDOW_AUTOSIZE);
+    }
     
     rosInit(); // ROS-related initialization
 }
@@ -69,11 +98,11 @@ void SampleDetectorNode::rosInit()
 
     // Advertise that this node is going to publish on the specified topic
     // (the second argument is the size of publishing queue)
-    detectionsPub = nh.advertise<but_objdet_msgs::DetectionArray>("/but_objdet/detections", 10);
+    detectionsPub = nh.advertise<but_objdet_msgs::DetectionArray>(detectionTopic, 10);
     
     // Subscribe to the /cam3d/rgb/image_raw topic (just example for this sample
     // detector, you can subscribe to any other topics)
-    dataSub = nh.subscribe("/cam3d/rgb/image_raw", 10, &SampleDetectorNode::newDataCallback, this);
+    dataSub = nh.subscribe(imageTopic, 10, &SampleDetectorNode::newDataCallback, this);
     
     // Inform that the detector is running (it will be written into console)
     ROS_INFO("Sample detector is running...");
@@ -147,7 +176,7 @@ void SampleDetectorNode::newDataCallback(const sensor_msgs::ImageConstPtr &image
     // The assigned prediction must have the same value of m_class (= class ID)
     // as the detection.
     //--------------------------------------------------------------------------
-    vector<TMatch> matches;
+    Matches matches;
     matcherOverlap->setMinOverlap(50); // minOverlap = 50%
     matcherOverlap->match(detections, predictions, matches);
 
@@ -177,14 +206,16 @@ void SampleDetectorNode::newDataCallback(const sensor_msgs::ImageConstPtr &image
     // Show the fake bounding box - just to demonstrate that the sample detector
     // works within ROS!
     //--------------------------------------------------------------------------
-    cv::Rect bb = detections[0].m_bb;
-	rectangle(
-	    image,
-	    cvPoint(bb.x, bb.y),
-	    cvPoint(bb.x + bb.width, bb.y + bb.height),
-	    cvScalar(255,255,255)
-	);
-	imshow("Sample detector", image);
+    if(VISUAL_OUTPUT) {
+        cv::Rect bb = detections[0].m_bb;
+	    rectangle(
+	        image,
+	        cvPoint(bb.x, bb.y),
+	        cvPoint(bb.x + bb.width, bb.y + bb.height),
+	        cvScalar(255,255,255)
+	    );
+	    imshow("Sample detector", image);
+	}
 }
 
 
@@ -199,6 +230,8 @@ int SampleDetectorNode::getNewObjectID()
     return ++lastObjectID;
 }
 
+}
+
 
 /* =============================================================================
  * Main function
@@ -209,7 +242,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "but_sample_detector");
 
     // Create the object managing connection with ROS system
-    SampleDetectorNode *sdm = new SampleDetectorNode();
+    but_sample_detector::SampleDetectorNode *sdm = new but_sample_detector::SampleDetectorNode();
     
     // Enters a loop
     // (you can replace the following while-loop with ros::spin(); if you do not

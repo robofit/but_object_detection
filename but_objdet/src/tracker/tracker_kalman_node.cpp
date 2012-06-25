@@ -1,10 +1,28 @@
-/**
- * Developed by dcgm-robotics@FIT group
- * Author: Tomas Hodan (xhodan04@stud.fit.vutbr.cz)
- * Date: 01.04.2012 (version 1.0)
+/******************************************************************************
+ * \file
  *
- * License: BUT OPEN SOURCE LICENSE
- *------------------------------------------------------------------------------
+ * $Id:$
+ *
+ * Copyright (C) Brno University of Technology
+ *
+ * This file is part of software developed by dcgm-robotics@FIT group.
+ *
+ * Author: Tomas Hodan
+ * Supervised by: Vitezslav Beran (beranv@fit.vutbr.cz), Michal Spanel (spanel@fit.vutbr.cz)
+ * Date: 01/04/2012
+ *
+ * This file is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This file is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this file.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ros/ros.h> // Main header of ROS
@@ -23,8 +41,19 @@
 #include <../../opt/ros/electric/stacks/ros_comm/utilities/rostime/include/ros/duration.h>
 
 using namespace std;
+using namespace cv;
 using namespace but_objdet_msgs;
 
+// If set to 1, detections will be visualized. If a tracker node is used, it is
+// better to visualize the detections together with predictions there.
+#define VISUAL_OUTPUT 1
+
+const string imageTopic = "/cam3d/rgb/image_raw";
+const string detectionTopic = "/but_objdet/detections";
+
+
+namespace but_objdet
+{
 
 /* -----------------------------------------------------------------------------
  * Constructor
@@ -35,7 +64,9 @@ TrackerKalmanNode::TrackerKalmanNode()
     defaultTtlTime = 5000; // = 5s
 
     // Window name (for visualization detections and predictions)
-    winName = "Tracker (white = detections, red = predictions)";
+    if(VISUAL_OUTPUT) {
+        winName = "Tracker (white = detections, red = predictions)";
+    }
 
     rosInit(); // ROS-related initialization
 }
@@ -46,13 +77,15 @@ TrackerKalmanNode::TrackerKalmanNode()
  */
 TrackerKalmanNode::~TrackerKalmanNode()
 {
-    map<int, TDetM>::iterator it;
+    DetMem::iterator it;
     for (it = detectionMem.begin(); it != detectionMem.end(); it++) {
         delete it->second.kf; // Free Kalman filter
     }
     
     // Create a window to vizualize the incoming video, detections and predictions
-    namedWindow(winName, CV_WINDOW_AUTOSIZE);
+    if(VISUAL_OUTPUT) {
+        namedWindow(winName, CV_WINDOW_AUTOSIZE);
+    }
 }
 
 
@@ -66,11 +99,11 @@ void TrackerKalmanNode::rosInit()
         &TrackerKalmanNode::predictDetections, this);
     
     // Subscribe to a topic with detections (published by a detector node)
-    detSub = nh.subscribe("/but_objdet/detections", 10, &TrackerKalmanNode::newDataCallback, this);
+    detSub = nh.subscribe(detectionTopic, 10, &TrackerKalmanNode::newDataCallback, this);
     
     if(VISUAL_OUTPUT) {
-        // Subscribe to a topic with detections (published by a detector node)
-        imgSub = nh.subscribe("/camera/rgb/image_raw", 10, &TrackerKalmanNode::newImageCallback, this);
+        // Subscribe to a topic with images
+        imgSub = nh.subscribe(imageTopic, 10, &TrackerKalmanNode::newImageCallback, this);
     }
     
     // Inform that the tracker is running (it will be written into console)
@@ -88,7 +121,7 @@ bool TrackerKalmanNode::predictDetections(but_objdet::PredictDetections::Request
 
     // Object ID was specified
     if(req.object_id != -1) {
-        map<int, TDetM>::iterator it = detectionMem.find(req.object_id);
+        DetMem::iterator it = detectionMem.find(req.object_id);
         
         // When it was found
         if(it != detectionMem.end()) {
@@ -113,7 +146,7 @@ bool TrackerKalmanNode::predictDetections(but_objdet::PredictDetections::Request
     
     // Class ID was specified => return all detections from that class
     else if(req.class_id != -1) {
-        map<int, TDetM>::iterator it;
+        DetMem::iterator it;
         for (it = detectionMem.begin(); it != detectionMem.end(); it++) {
             if(it->second.det.m_class == req.class_id) {
                 
@@ -136,7 +169,7 @@ bool TrackerKalmanNode::predictDetections(but_objdet::PredictDetections::Request
     
     // Nothing specified => return predictions for all stored detections
     else {
-        map<int, TDetM>::iterator it;
+        DetMem::iterator it;
         for (it = detectionMem.begin(); it != detectionMem.end(); it++) {
             but_objdet_msgs::Detection det = it->second.det;
 
@@ -169,7 +202,7 @@ void TrackerKalmanNode::newDataCallback(const but_objdet_msgs::DetectionArrayCon
         int detId = detArrayMsg->detections[i].m_id;
         
         // Check if the current detection is already in the memory
-        map<int, TDetM>::iterator it = detectionMem.find(detId);
+        DetMem::iterator it = detectionMem.find(detId);
         
         // When it was found
         if(it != detectionMem.end()) {
@@ -210,7 +243,7 @@ void TrackerKalmanNode::newDataCallback(const but_objdet_msgs::DetectionArrayCon
     }
     
     // Decrease TTL to all saved detections
-    map<int, TDetM>::iterator it;
+    DetMem::iterator it;
     vector<int> toBeRemoved; // Vector of IDs whose detection has TTL = 0
     for (it = detectionMem.begin(); it != detectionMem.end(); it++) {
         it->second.ttl--;
@@ -239,6 +272,7 @@ void TrackerKalmanNode::newDataCallback(const but_objdet_msgs::DetectionArrayCon
  */
 void TrackerKalmanNode::newImageCallback(const sensor_msgs::ImageConstPtr &imageMsg)
 {
+
     // Get an OpenCV Mat from the image message
     Mat image;
     try {
@@ -258,7 +292,7 @@ void TrackerKalmanNode::newImageCallback(const sensor_msgs::ImageConstPtr &image
         image.copyTo(img3ch);
     }
     
-    map<int, TDetM>::iterator it;
+    DetMem::iterator it;
     for (it = detectionMem.begin(); it != detectionMem.end(); it++) {
         
         // Visualize detection
@@ -287,7 +321,9 @@ void TrackerKalmanNode::newImageCallback(const sensor_msgs::ImageConstPtr &image
 	    );
     }
     
-    imshow(winName, img3ch);
+    if(VISUAL_OUTPUT) {
+        imshow(winName, img3ch);
+    }
 }
 
 
@@ -300,6 +336,8 @@ int TrackerKalmanNode::rosTimeToMs(ros::Time stamp)
     return stamp.sec * 1000 + stamp.nsec / 1000000;
 }
 
+}
+
 
 /* =============================================================================
  * Main function
@@ -310,7 +348,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "but_tracker_kalman");
 
     // Create the object managing connection with ROS system
-    TrackerKalmanNode *tkn = new TrackerKalmanNode();
+    but_objdet::TrackerKalmanNode *tkn = new but_objdet::TrackerKalmanNode();
     
     // Enters a loop, calling message callbacks
     while(ros::ok()) {

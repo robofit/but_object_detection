@@ -1,13 +1,29 @@
-/**
- * Developed by dcgm-robotics@FIT group
+/******************************************************************************
+ * \file
+ *
+ * $Id:$
+ *
+ * Copyright (C) Brno University of Technology
+ *
+ * This file is part of software developed by dcgm-robotics@FIT group.
+ *
  * Author: Tomas Hodan (xhodan04@stud.fit.vutbr.cz)
- * Date: 01.04.2012 (version 1.0)
+ * Supervised by: Vitezslav Beran (beranv@fit.vutbr.cz), Michal Spanel (spanel@fit.vutbr.cz)
+ * Date: 01/04/2012
+ * Description: Sample detector demonstrating how to wrap a detector using ObjDet API into ROS.
  *
- * License: BUT OPEN SOURCE LICENSE
+ * This file is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * Description:
- * Sample detector demonstrating how to wrap a detector using ObjDet API into ROS.
- *------------------------------------------------------------------------------
+ * This file is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this file.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ros/ros.h> // Main header of ROS
@@ -19,7 +35,11 @@
 
 using namespace cv;
 using namespace std;
+using namespace but_objdet;
 
+
+namespace but_sample_detector
+{
 
 /* -----------------------------------------------------------------------------
  * Constructor
@@ -71,7 +91,7 @@ double SampleDetector::getParam( int param_id )
 /* -----------------------------------------------------------------------------
  * Function providing predictions, which can be taken into account during detection
  */
-void SampleDetector::prediction( vector<butObject>& objects, int FLAGS )
+void SampleDetector::prediction( Objects& objects, int FLAGS )
 {
     // ...
 }
@@ -80,12 +100,12 @@ void SampleDetector::prediction( vector<butObject>& objects, int FLAGS )
 /* -----------------------------------------------------------------------------
  * Detection (FAKE)
  */
-void SampleDetector::detect( const Mat& rgb, const Mat& depth, vector<butObject>& objects, int FLAGS )
+void SampleDetector::detect( const Mat& rgb, const Mat& depth, Objects& objects, int FLAGS )
 {
     objects.clear();
 
     // Set a bounding box of a FAKE detection
-    butObject detection;
+    Object detection;
     detection.m_bb.x = 100 + (rand() % 20); 
     detection.m_bb.y = 100 + (rand() % 20); 
     detection.m_bb.width = 100 + (rand() % 5);
@@ -98,5 +118,7 @@ void SampleDetector::detect( const Mat& rgb, const Mat& depth, vector<butObject>
     detection.m_score = 0;
     
     objects.push_back(detection);
+}
+
 }
 
