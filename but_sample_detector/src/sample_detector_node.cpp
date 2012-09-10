@@ -51,9 +51,9 @@ using namespace but_objdet_msgs;
 
 // If set to 1, detections will be visualized. If a tracker node is used, it is
 // better to visualize the detections together with predictions there.
-#define VISUAL_OUTPUT 0
+#define VISUAL_OUTPUT 1
 
-const string imageTopic = "/cam3d/rgb/image_raw";
+const string imageTopic = "/camera/rgb/image_color";
 const string detectionTopic = "/but_objdet/detections";
 
 
@@ -178,7 +178,8 @@ void SampleDetectorNode::newDataCallback(const sensor_msgs::ImageConstPtr &image
     //--------------------------------------------------------------------------
     Matches matches;
     matcherOverlap->setMinOverlap(50); // minOverlap = 50%
-    matcherOverlap->match(detections, predictions, matches);
+    if (detections.size() >= predictions.size())
+        matcherOverlap->match(detections, predictions, matches);
 
     // 5) Modify m_id and m_class of each detection based on matched prediction
     //--------------------------------------------------------------------------

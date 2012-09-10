@@ -116,6 +116,15 @@ void SampleDetector::detect( const Mat& rgb, const Mat& depth, Objects& objects,
     
     detection.m_class = unknown;
     detection.m_score = 0;
+detection.m_angle = 0;
+
+detection.m_mask = Mat(cvSize(0, 0), CV_8U);
+
+detection.m_timestamp = 0;
+detection.m_speed = cv::Point3f(0,0,0);
+
+
+
     
     objects.push_back(detection);
 }
