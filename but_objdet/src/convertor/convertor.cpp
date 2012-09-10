@@ -122,6 +122,7 @@ Detection Convertor::butObjectToDetection(const Object &object, std_msgs::Header
     detection.m_speed.y = object.m_speed.y;
     detection.m_speed.z = object.m_speed.z;
 
+
     // Convert Mat to Image msg
     cv_bridge::CvImage mask;
     mask.encoding = sensor_msgs::image_encodings::TYPE_8UC1; // It is supposed that mask is of type CV_8UC1

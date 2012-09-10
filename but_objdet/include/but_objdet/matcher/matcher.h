@@ -34,20 +34,46 @@
 namespace but_objdet
 {
 
+/**
+  * A structure to represent a detection-prediction match.
+  */
 struct Match
 {
     int detId; // Detection index
     int predId; // Prediction index
 };
 
+/**
+  * A vector of detection-prediction matches.
+  */
 typedef std::vector<Match> Matches;
 
 
+/**
+ * An abstract class to be inherited by every matcher created using ObjDet API.
+ * The purpose of a matcher is to find corresponding pairs (detection, prediction)
+ * using some matching criterion (e.g. overlap of their bounding boxes).
+ * 
+ * Predictions are obtained from the previous detections and because we would like
+ * to know if there is any new detection corresponding to the same object
+ * as some of the predictions, we want to find the detection-prediction matches.
+ *
+ * @author Tomas Hodan, Vitezslav Beran (beranv@fit.vutbr.cz), Michal Spanel (spanel@fit.vutbr.cz)
+ */
 class Matcher
 {
 public:
+    /**
+     * A destructor of Matcher.
+     */
 	virtual ~Matcher() {}
 
+    /**
+     * Matching function.
+     * @param detections  A vector of detections.
+     * @param predictions  A vector of predictions.
+     * @param matches  (output) A vector of detection-prediction matches.
+     */
     virtual void match(const Objects &detections, const Objects &predictions, Matches &matches) = 0;
 };
 

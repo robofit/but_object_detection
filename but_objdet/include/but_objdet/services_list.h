@@ -31,8 +31,15 @@
 
 namespace but_objdet
 {
-	// Service to obtain predictions of detections (provided by tracker)
+	/**
+     * Name of a service to obtain predictions of detections (provided by tracker).
+     */
 	const std::string BUT_OBJDET_PredictDetections_SRV("/but_objdet/predict_detections");
+
+	/**
+     * Name of a service to obtain objects (provided by tracker).
+     */
+	const std::string BUT_OBJDET_GetObjects_SRV("/but_objdet/get_objects");
 }
 
 #endif // BUT_OBJDET_SERVICES_LIST_H

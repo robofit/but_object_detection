@@ -46,7 +46,9 @@ enum ObjClass {
   person,
   plant,
   lgv,
-  bowl
+  bowl,
+  moving_segment,
+  depth_segment
 };
 
 
@@ -56,6 +58,7 @@ struct Object
     int m_class;            // object class
     float m_score;          // detection score (0.0, 1.0)
 
+	int64		m_timestamp;    // timestamp
     cv::Point3f m_pos_2D;       // position in image + depth value
     cv::Rect    m_bb;           // bounding box in image
     cv::Mat     m_mask;         // object mask (CV_8U type)
