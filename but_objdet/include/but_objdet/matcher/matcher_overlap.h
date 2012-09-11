@@ -36,16 +36,29 @@ namespace but_objdet
 {
 
 /**
- * @class MatcherOverlap
+ * A class implementing matching of detections and predictions based on their
+ * bounding boxes overlap.
  */
 class MatcherOverlap : public Matcher
 {
 public:
+    /**
+     * MatcherOverlap constructor.
+     * @param min  The bounding boxes are considered to be matching each other if
+     * their overlapping area represents at least min% of each of them.
+     */
 	MatcherOverlap(float min=50);
 
+    /**
+     * A function to set the minimal overlap.
+     * @param min  The bounding boxes are considered to be matching each other if
+     * their overlapping area represents at least min% of each of them.
+     */
 	void setMinOverlap(float min=50);
 
-	// Method from Matcher abstract class
+	/**
+     * Implementation of the virtual matching function from the Matcher abstract class.
+     */
 	void match(const Objects &detections, const Objects &predictions, Matches &matches);
 
 private:
@@ -55,3 +68,4 @@ private:
 }
 
 #endif // _MATCHER_OVERLAP_
+

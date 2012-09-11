@@ -16,6 +16,8 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 # Create but_objdet library
 rosbuild_add_library(but_objdet src/convertor/convertor.cpp
                                 src/matcher/matcher_overlap.cpp
