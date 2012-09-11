@@ -26,8 +26,8 @@
  */
 
 #pragma once
-#ifndef _TRACKER_KALMAN_NODE_
-#define _TRACKER_KALMAN_NODE_
+#ifndef _FLIP_IMAGE_NODE_
+#define _FLIP_IMAGE_NODE_
 
 #include <map>
 #include <ros/ros.h> // Main header of ROS
@@ -45,17 +45,6 @@ namespace but_objdet
 {
 
 /**
-  * A structure storing data related to a detection of a particular object.
-  */
-struct DetM
-{
-    but_objdet_msgs::Detection det; // Detection
-    TrackerKalman *kf; // Kalman filter for tracking of this detection
-    int ttl; // Time to live
-    int msTime; // Time of detection in milliseconds
-};
-
-/**
  * A class implementing the tracker node, which creates and maintains a Kalman filter
  * tracker for each detected object (if there is no detection of an object for
  * some time / number of frames, the tracker for that object is canceled).
@@ -65,11 +54,11 @@ struct DetM
  *
  * @author Tomas Hodan, Vitezslav Beran (beranv@fit.vutbr.cz), Michal Spanel (spanel@fit.vutbr.cz)
  */
-class TrackerKalmanNode
+class FlipImageNode
 {
 public:
-	TrackerKalmanNode();
-	~TrackerKalmanNode();
+	FlipImageNode();
+	~FlipImageNode();
 
 private:
     /**
@@ -77,36 +66,6 @@ private:
      */
 	void rosInit();
 
-    /**
-     * A function implementing the prediction service.
-     * @param req  Service request.
-     * @param res  Service response.
-     * @return  Success / failure of the service.
-     */
-	bool predictDetections(but_objdet::PredictDetections::Request &req,
-						   but_objdet::PredictDetections::Response &res);
-        
-    /**
-     * A function implementing the get objects service.
-     * @param req  Service request.
-     * @param res  Service response.
-     * @return  Success / failure of the service.
-     */
-	bool getObjects(but_objdet::GetObjects::Request &req,
-						   but_objdet::GetObjects::Response &res);
-
-    /**
-     * Conversion from a ROS Time to miliseconds.
-     * @param stamp  ROS Time.
-     * @return  Miliseconds.
-     */
-	int rosTimeToMs(ros::Time stamp);
-
-    /**
-     * A callback function called when new detections are received.
-     * @param detArrayMsg  DetectionArray message.
-     */
-	void newDataCallback(const but_objdet_msgs::DetectionArrayConstPtr &detArrayMsg);
 
     /**
      * A callback function called when a new Image is received. The image is used just
@@ -116,33 +75,16 @@ private:
      */
 	void newImageCallback(const sensor_msgs::ImageConstPtr &imageMsg);
 
-    /**
-     * Memory of currently considered detections.
-     * 
-     */
-	
-	typedef std::map<int, DetM> _DetMem; //m_id
-        typedef std::map<int, _DetMem> DetMem; //m_class
-        DetMem detectionMem;
-
-	/**
-	 * If a detection of an object didn't occur in the specified number of
-	 * last detections (specified by a value of this variable),
-	 * it is not considered any more.
-	 */
-	int defaultTtl;
-
-    /**
-	 * If a detection of an object doesn't occur again during this period,
-	 * it is not considered any more.
-	 */
-	int defaultTtlTime;
+        void newDepthCallback(const sensor_msgs::ImageConstPtr &imageMsg);
+  
 
     ros::NodeHandle nh; // NodeHandle is the main access point for communication with ROS system
-	ros::ServiceServer predictionSRV;
-	ros::ServiceServer objectsSRV; //service for providing objects
-	ros::Subscriber detSub;
+	
+	
 	ros::Subscriber imgSub;
+        ros::Publisher imgPub;
+        ros::Subscriber depthSub;
+        ros::Publisher depthPub;
 	std::string winName;
 };
 

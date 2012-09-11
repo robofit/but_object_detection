@@ -35,15 +35,44 @@
 namespace but_objdet
 {
 
+/**
+ * An abstract class to be inherited by every tracker created using ObjDet API.
+ * The purpose of a tracker is to predict the next state (at a requested time)
+ * of a some measurement (typically of a bounding box size and position).
+ *
+ * @author Tomas Hodan, Vitezslav Beran (beranv@fit.vutbr.cz), Michal Spanel (spanel@fit.vutbr.cz)
+ */
 class Tracker
 {
 public:
 	virtual ~Tracker() {}
 
+    /**
+     * Initialization, which have to be called before calling either predict or update.
+	 * @param measurement  A matrix with one row containing parameters (to be later predicted)
+	 * with values initialized from the first measurement.
+	 * @param secDerivate  Specifies if the prediction is considerate with second
+	 * derivate (acceleration) of movement (secDerivate = true)
+	 * or just with the first derivate (velocity)
+	 * @return  True if the initialization was successful, Fasle otherwise.
+     */
     virtual bool init(const cv::Mat& measurement, bool secDerivate) = 0;
 
+    /**
+     * Prediction of the measurement next state.
+     * @param miliseconds  Time (= number of miliseconds passed since the last update)
+     * for which the next state should be predicted.
+     * @return  Prediction for the requested time.
+     */
     virtual const cv::Mat& predict(int64 miliseconds) = 0;
 
+    /**
+     * Update the measurement.
+     * @param measurement  New measurement to be added into account.
+     * @param miliseconds  Miliseconds passed since the last update.
+     * @return  Updates its state and returns the filtered estimate of true state
+	 * counted from the measurement and prediction.
+	*/
     virtual const cv::Mat& update(const cv::Mat& measurement, int64 miliseconds) = 0;
 };
 

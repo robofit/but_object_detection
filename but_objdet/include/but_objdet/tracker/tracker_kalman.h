@@ -35,32 +35,38 @@
 namespace but_objdet
 {
 
+/**
+ * A class implementing tracking based on Kalman filter.
+ *
+ * @author Tomas Hodan, Vitezslav Beran (beranv@fit.vutbr.cz), Michal Spanel (spanel@fit.vutbr.cz)
+ */
 class TrackerKalman : public Tracker
 {
 public:
     TrackerKalman();
     virtual ~TrackerKalman();
     
-	//Initialization. Have to be called before calling either predict or update
-	//measurement parameter: expected matrix with one row containing parameters
-	// to predict with values initialized from the first measurement
-	//secDerivate parameter: specifies if the prediction is considerate with second
-	// derivate (acceleration) of movement (default is with -> swecDerivate = true)
-	// or just with the first derivate (velocity)
+	/**
+     * Implementation of the virtual function from the Tracker abstract class.
+     */
 	bool init(const cv::Mat& measurement, bool secDerivate = true);
 
-	//Given the miliseconds in the parameter it will return Mat with predicate
-	//state after those miliseconds (just informative method: not neccesary to call it at all)
+	/**
+     * Implementation of the virtual function from the Tracker abstract class.
+     */
 	const cv::Mat& predict(int64 miliseconds = 1000);
 
-	//Given the next measurement (in measurement parameter) and miliseconds
-	// (in miliseconds parameter) passed since last update
-	// (or initialization if this is first update)
-	//it will update its state and return the filtered estimate of true state
-	//counted from the measurement and prediction
+    /**
+     * Implementation of the virtual function from the Tracker abstract class.
+     */
 	const cv::Mat& update(const cv::Mat& measurement, int64 miliseconds = 1000);
 
 private:
+    /**
+     * Modification of Kalman filter's transition matrix according to elapsed time.
+     * It is used while predicting and updating the measurement.
+     * @param miliseconds  Elapsed time.
+     */
 	void modifyTransMat(int64 miliseconds);
 
 private:
@@ -72,3 +78,4 @@ private:
 }
 
 #endif // _TRACKER_KALMAN_
+

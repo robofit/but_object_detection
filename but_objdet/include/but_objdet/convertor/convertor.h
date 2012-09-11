@@ -40,15 +40,50 @@ namespace but_objdet
 
 typedef std::vector<but_objdet_msgs::Detection> Detections;
 
+/**
+ * A class performing these conversions:
+ *  1) Detection to Object
+ *  2) Object to Detection
+ *  3) A vector of Objects to a vector of Detections
+ *  4) A vector of Detections to a vector of Objects
+ * Notes:
+ *  - Detection = ROS message defined in but_objdet_msgs package)
+ *  - Object = C++ struct (defined in but_objdet.h located in but_objdet package)
+ *  - Detection and Object contain equivalent items. Detection message is used
+ *    to transfer data through ROS topics/services, while Object is used for
+ *    processing within C++ classes.
+ *
+ * @author Tomas Hodan, Vitezslav Beran (beranv@fit.vutbr.cz), Michal Spanel (spanel@fit.vutbr.cz)
+ */
 class Convertor
 {
 public:
+    /**
+     * Conversion from Detection to Object.
+     * @param A Detection message to be converted to an Object.
+     * @return Resulting Object.
+     */
 	static Object detectionToButObject(const but_objdet_msgs::Detection &detection);
 
+    /**
+     * Conversion from a vector of Detection messages to a vector of Objects.
+     * @param A vector of Detection messages to be converted to a vector of Objects.
+     * @return Resulting vector of Objects.
+     */
 	static Objects detectionsToButObjects(const Detections &detections);
 
+    /**
+     * Conversion from Object to Detection.
+     * @param An object to be converted to a Detection message.
+     * @return Resulting Detection message.
+     */
 	static but_objdet_msgs::Detection butObjectToDetection(const Object &object, std_msgs::Header header);
 
+    /**
+     * Conversion from a vector of Objects to a vector of Detection messages.
+     * @param A vector of Objects to be converted to a vector of Detection messages.
+     * @return Resulting vector of Detection messages.
+     */
 	static Detections butObjectsToDetections(const Objects &objects, std_msgs::Header header);
 };
 
